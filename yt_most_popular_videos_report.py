@@ -67,10 +67,10 @@ def youtube_videos():
         try:
             data = dict(requested_region = region_code,
                         title = response['items'][i]['snippet']['title'],
-                        view_count = response['items'][i]['statistics']['viewCount'],
-                        like_count = response['items'][i]['statistics']['likeCount'],
-                        comment_count = response['items'][i]['statistics']['commentCount'],
-                        published_date = response['items'][i]['snippet']['publishedAt'],
+                        view_count = int(response['items'][i]['statistics']['viewCount']),
+                        like_count = int(response['items'][i]['statistics']['likeCount']),
+                        comment_count = int(response['items'][i]['statistics']['commentCount']),
+                        published_date = dt.strptime(response['items'][i]['snippet']['publishedAt'], "%Y-%m-%dT%H:%M:%SZ"),
                         video_url = 'https://www.youtube.com/watch?v='+str(response['items'][i]['id']),
                         channel_url = 'https://www.youtube.com/channel/'+str(response['items'][i]['snippet']['channelId']),
                         channel_id = response['items'][i]['snippet']['channelId'])
@@ -96,9 +96,9 @@ def youtube_videos():
         for i in range(len(response['items'])):
             try:
                 data = dict(channel_name = response['items'][i]['snippet']['title'],
-                            channel_subscribers = response['items'][i]['statistics']['subscriberCount'],
-                            channel_views = response['items'][i]['statistics']['viewCount'],
-                            channel_videos = response['items'][i]['statistics']['videoCount'],
+                            channel_subscribers = int(response['items'][i]['statistics']['subscriberCount']),
+                            channel_views = int(response['items'][i]['statistics']['viewCount']),
+                            channel_videos = int(response['items'][i]['statistics']['videoCount']),
                             channel_id = response['items'][i]['id'])
             
                 channel_ids.append(data)
