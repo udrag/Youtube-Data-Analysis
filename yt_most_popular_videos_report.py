@@ -9,8 +9,11 @@ import google_auth_oauthlib.flow
 import googleapiclient.errors
 from googleapiclient.discovery import build
 
+# read the personal data and assign it to relevant variables
+with open('PATH TO YOUR FILE WITH THE API KEY', 'r') as f: # file that stores users Reddit account name
+    api_key = f.read()
+
 # Get YouTube API credentials
-api_key = 'YOUR API KEY'
 youtube = build('youtube', 'v3', developerKey=api_key)
 
 def youtube_trending_videos():
