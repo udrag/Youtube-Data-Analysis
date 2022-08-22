@@ -16,7 +16,6 @@ with open('PATH TO YOUR FILE WITH THE API KEY', 'r') as f: # file that stores us
 # Get YouTube API credentials
 <<<<<<< HEAD
 =======
-api_key = 'AIzaSyDTyW6xXRO6-Z8T5tXWLwKXv0SFmYlxfjI'
 >>>>>>> parent of 2b8330a (Updated the function to youtube_trending_videos)
 youtube = build('youtube', 'v3', developerKey=api_key)
 
