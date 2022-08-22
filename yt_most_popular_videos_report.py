@@ -14,44 +14,53 @@ with open('PATH TO YOUR FILE WITH THE API KEY', 'r') as f: # file that stores us
     api_key = f.read()
 
 # Get YouTube API credentials
+<<<<<<< HEAD
+=======
+api_key = 'AIzaSyDTyW6xXRO6-Z8T5tXWLwKXv0SFmYlxfjI'
+>>>>>>> parent of 2b8330a (Updated the function to youtube_trending_videos)
 youtube = build('youtube', 'v3', developerKey=api_key)
 
-def youtube_trending_videos():
+def youtube_videos():
     """
     This function generates a data frame with statistics about YouTube videos.
     The values of region code and number of results are obtained via input functions.
     In any input field write 'list' to get the list of all the region codes.
     Last question will ask the user for input on adding to the data frame the statistics about the channels of the videos.
     """
-    # Create an API client for the region codes
+    ## Create an API client for the region codes
     region_list = youtube.i18nRegions().list(part="snippet")
     response = region_list.execute()
     
-    # User input for the region code
-    region_code = str(input('Enter the 2 letters of the region code. If you would like to see the whole list of region codes, please enter \'list\'')).upper()
+    ## User input for the region code
+    print('Enter the 2 letters of the region code. If you would like to see the whole list of region codes, please enter \'list\'')
+    region_code = str(input()).upper()
     matches = str(bool([item for item in response['items'] if(item["id"] == region_code)]))
     
-    # Conditional statement for the region codes list
+    ## Conditional statement for the region codes list
     if region_code == 'LIST':
         for i in range(len(response['items'])):
             print(response['items'][i]['snippet']['gl'] + ' ' + '-' + ' ' + response['items'][i]['snippet']['name'])
-        region_code = str(input('Enter the 2 letters of the region code:')).upper()
+        print('Enter the 2 letters of the region code:')
+        region_code = str(input()).upper()
         matches = str(bool([item for item in response['items'] if(item["id"] == region_code)]))
     
-    # Conditional statement for misspelled words
+    ## Conditional statement for misspelled words
     while matches == 'False':
-        region_code = str(input(f'{region_code} is not a valid region code. Please enter the 2 letters of the region code. If you would like to see the whole list of region codes, please enter \'list\'')).upper()
+        print(f'{region_code} is not a valid region code. Please enter the 2 letters of the region code. If you would like to see the whole list of region codes, please enter \'list\'')
+        region_code = str(input()).upper()
         matches = str(bool([item for item in response['items'] if(item["id"] == region_code)]))
         if region_code == 'LIST': # Conditional statement for the region codes list inside the while loop
             for i in range(len(response['items'])):
                 print(response['items'][i]['snippet']['gl'] + ' ' + '-' + ' ' + response['items'][i]['snippet']['name'])
-            region_code = str(input('Enter the 2 letters of the region code:')).upper()
+            print('Enter the 2 letters of the region code:')
+            region_code = str(input()).upper()
             matches = str(bool([item for item in response['items'] if(item["id"] == region_code)]))
     
-    # User input for the number of results
-    number = int(input('Enter the number of videos you would like to see (max 50).'))
+    ## User input for the number of results
+    print('Enter the number of videos you would like to see (max 50).')
+    number = int(input())
       
-    # API request parameters
+    ## API request parameters
     search_response = youtube.videos().list(
                         part = 'snippet,contentDetails,statistics,localizations',
                         chart = 'mostPopular',
@@ -59,7 +68,7 @@ def youtube_trending_videos():
                         maxResults = number)
     response = search_response.execute() 
     
-    # Create a list and add the API results
+    ## Create a list and add the API results
     all_data = []
     for i in range(len(response['items'])):
         try:
@@ -77,31 +86,36 @@ def youtube_trending_videos():
 
         all_data.append(data)
         
-    # User input for channel statistics to be adde to the data frame
-    answer = str(input('Would you like to include channel info as well?')).upper()
-
-    # Conditional statement for YES answer
+    ## User input for channel statistics to be adde to the data frame
+    print('Would you like to include channel info as well?')
+    answer = str(input()).upper()
+    
+    ## Conditional statement for YES answer
     if answer == 'YES':
         channel_list = list((pd.DataFrame(all_data))['channel_id'])
-        request = youtube.channels().list(part='snippet,contentDetails,statistics',
-                                            id=','.join(channel_list))
+                
+        request = youtube.channels().list(
+                    part='snippet,contentDetails,statistics',
+                    id=','.join(channel_list))
         response = request.execute()
+        
         channel_ids = []      
         for i in range(len(response['items'])):
             try:
                 data = dict(channel_name = response['items'][i]['snippet']['title'],
-                channel_subscribers = int(response['items'][i]['statistics']['subscriberCount']),
-                channel_views = int(response['items'][i]['statistics']['viewCount']),
-                channel_videos = int(response['items'][i]['statistics']['videoCount']),
-                channel_id = response['items'][i]['id'])
-                
+                            channel_subscribers = int(response['items'][i]['statistics']['subscriberCount']),
+                            channel_views = int(response['items'][i]['statistics']['viewCount']),
+                            channel_videos = int(response['items'][i]['statistics']['videoCount']),
+                            channel_id = response['items'][i]['id'])
+            
                 channel_ids.append(data)
-                
+            
             except KeyError:
-                print('A KeyError %d occurred:\n%s')      
-        # Return the merged data
+                print('A KeyError %d occurred:\n%s')
+                
+        ### Return the merged data
         return pd.merge(pd.DataFrame(all_data), pd.DataFrame(channel_ids), on='channel_id')
-    # Return the video statistics only
+    ## Return the video statistics only
     else:
         return pd.DataFrame(all_data)
         
@@ -123,7 +137,7 @@ df['top'] = pd.cut(df.index, bin_edges, labels=bin_names)
 bin_cat = pd.api.types.CategoricalDtype(ordered = True, categories = bin_names)
 df['top'] = df['top'].astype(bin_cat)
 
-# Plot a barplot for the viewcounts of the most popular videos
+# Multivariate exploration of data using a bar chart
 plt.figure(figsize=[20,6])
 
 ax = sns.barplot(data = df, x = 'channel_name', y = 'view_count', hue='top',
@@ -133,11 +147,11 @@ ax.legend(loc = 1, ncol = 1, title = 'TOP Tiers')
 
 plt.ticklabel_format(style='plain', axis='y')
 plt.title(f'Youtube most popular videos on {pd.to_datetime("today").date()} by view count', size=15)
-plt.xlabel('UAT', size=11)
+plt.xlabel('Channel name', size=11)
 plt.xticks(size=12, rotation=90)
-plt.ylabel('Suma Aprobata', size=12);
+plt.ylabel('Views', size=12);
 
-# Plot a heatmap for all the numerical columns to explore the correlations
+# Multivariate exploration of data using a heatmap for all the numerical columns
 corr = df.corr() ## create a list of correlations
 
 sns.set(rc = {'figure.figsize':(15,8)})
